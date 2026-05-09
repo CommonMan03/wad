@@ -1,0 +1,2 @@
+# AWS Elastic Beanstalk: tells the platform how to start the Node web process
+web: node server.js
