@@ -8,33 +8,93 @@ import { AuthService } from './auth.service';
   standalone: true,
   imports: [FormsModule, RouterLink],
   template: `
-    <div class="auth-page">
+    <div class="auth-container">
       <div class="auth-card">
-        <h3>Login</h3>
-        <form class="auth-form" (ngSubmit)="go()">
-          <input [(ngModel)]="email" name="e" type="email" placeholder="Email" required />
-          <input [(ngModel)]="pass" name="p" type="password" placeholder="Password" required />
-          <button type="submit" class="btn">Sign in</button>
+        <h2>Login</h2>
+        <form (ngSubmit)="handleLogin()">
+          <input [(ngModel)]="email" type="email" placeholder="Email" name="email" required>
+          <input [(ngModel)]="password" type="password" placeholder="Password" name="password" required>
+          <button type="submit">Login</button>
+          @if (errorMessage) {
+            <div class="error">{{ errorMessage }}</div>
+          }
         </form>
-        <a routerLink="/register" class="link">Create account</a>
-        @if (err) {
-          <small class="msg-err">{{ err }}</small>
-        }
+        <p>Don't have an account? <a routerLink="/register">Register</a></p>
       </div>
     </div>
   `,
+  styles: [`
+    .auth-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    .auth-card {
+      background: white;
+      padding: 2rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 400px;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 1.5rem;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    input {
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .error {
+      color: #dc3545;
+      background: #f8d7da;
+      padding: 8px;
+      border-radius: 4px;
+      text-align: center;
+    }
+    p {
+      text-align: center;
+      margin-top: 1rem;
+    }
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+  `]
 })
 export class LoginComponent {
   email = '';
-  pass = '';
-  err = '';
+  password = '';
+  errorMessage = '';
 
   constructor(private auth: AuthService, private router: Router) {}
 
-  go(): void {
-    this.err = '';
-    if (this.auth.login(this.email, this.pass)) this.router.navigate(['/profile']);
-    else this.err = 'Invalid email or password';
+  handleLogin() {
+    if (this.auth.login(this.email, this.password)) {
+      this.router.navigate(['/profile']);
+    } else {
+      this.errorMessage = 'Invalid email or password';
+    }
   }
 }
 
@@ -43,36 +103,96 @@ export class LoginComponent {
   standalone: true,
   imports: [FormsModule, RouterLink],
   template: `
-    <div class="auth-page">
+    <div class="auth-container">
       <div class="auth-card">
-        <h3>Register</h3>
-        <form class="auth-form" (ngSubmit)="go()">
-          <input [(ngModel)]="name" name="n" placeholder="Name" required />
-          <input [(ngModel)]="email" name="e" type="email" placeholder="Email" required />
-          <input [(ngModel)]="pass" name="p" type="password" placeholder="Password" required />
-          <button type="submit" class="btn">Sign up</button>
+        <h2>Register</h2>
+        <form (ngSubmit)="handleRegister()">
+          <input [(ngModel)]="name" type="text" placeholder="Name" name="name" required>
+          <input [(ngModel)]="email" type="email" placeholder="Email" name="email" required>
+          <input [(ngModel)]="password" type="password" placeholder="Password" name="password" required>
+          <button type="submit">Register</button>
+          @if (errorMessage) {
+            <div class="error">{{ errorMessage }}</div>
+          }
         </form>
-        <a routerLink="/login" class="link">Already have an account?</a>
-        @if (err) {
-          <small class="msg-err">{{ err }}</small>
-        }
+        <p>Already have an account? <a routerLink="/login">Login</a></p>
       </div>
     </div>
   `,
+  styles: [`
+    .auth-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    .auth-card {
+      background: white;
+      padding: 2rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 400px;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 1.5rem;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    input {
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    button {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .error {
+      color: #dc3545;
+      background: #f8d7da;
+      padding: 8px;
+      border-radius: 4px;
+      text-align: center;
+    }
+    p {
+      text-align: center;
+      margin-top: 1rem;
+    }
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+  `]
 })
 export class RegisterComponent {
   name = '';
   email = '';
-  pass = '';
-  err = '';
+  password = '';
+  errorMessage = '';
 
   constructor(private auth: AuthService, private router: Router) {}
 
-  go(): void {
-    this.err = '';
-    const result = this.auth.register(this.name, this.email, this.pass);
-    if (result === 'exists') this.err = 'Email already exists';
-    else this.router.navigate(['/login']);
+  handleRegister() {
+    const result = this.auth.register(this.name, this.email, this.password);
+    if (result === 'success') {
+      this.router.navigate(['/login']);
+    } else {
+      this.errorMessage = 'Registration failed';
+    }
   }
 }
 
@@ -81,31 +201,78 @@ export class RegisterComponent {
   standalone: true,
   imports: [RouterLink],
   template: `
-    <div class="auth-page">
-      <div class="auth-card">
-        <h3>Profile</h3>
+    <div class="profile-container">
+      <div class="profile-card">
+        <h2>Profile</h2>
         @if (user) {
-          <p class="profile-line">
-            <strong>{{ user.name }}</strong><br />
-            <span class="email">{{ user.email }}</span>
-          </p>
+          <div class="user-info">
+            <h3>{{ user.name }}</h3>
+            <p>{{ user.email }}</p>
+          </div>
+          <button (click)="handleLogout()">Logout</button>
+        } @else {
+          <p>No user logged in</p>
+          <a routerLink="/login">Login</a>
         }
-        <div class="actions">
-          <button type="button" class="btn btn-ghost" (click)="out()">Logout</button>
-          <a routerLink="/login" class="link">Login page</a>
-        </div>
       </div>
     </div>
   `,
+  styles: [`
+    .profile-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    .profile-card {
+      background: white;
+      padding: 2rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    h2 {
+      color: #333;
+      margin-bottom: 1.5rem;
+    }
+    .user-info {
+      margin-bottom: 2rem;
+    }
+    h3 {
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      color: #666;
+      margin-bottom: 2rem;
+    }
+    button {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+  `]
 })
 export class ProfileComponent {
-  user: { name: string; email: string } | null = null;
+  user: any = null;
 
   constructor(private auth: AuthService, private router: Router) {
-    this.user = this.auth.profile();
+    this.user = this.auth.getProfile();
   }
 
-  out(): void {
+  handleLogout() {
     this.auth.logout();
     this.router.navigate(['/login']);
   }

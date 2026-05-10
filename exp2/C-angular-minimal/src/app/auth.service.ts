@@ -1,38 +1,57 @@
 import { Injectable } from '@angular/core';
 
-type UserRecord = { name: string; email: string; password: string };
-type SessionUser = { name: string; email: string };
-
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthService {
-  private readonly usersKey = 'app_users';
-  private readonly sessionKey = 'session_user';
-
-  private users(): UserRecord[] {
-    return JSON.parse(localStorage.getItem(this.usersKey) || '[]') as UserRecord[];
-  }
-
-  register(name: string, email: string, password: string): string | null {
-    const users = this.users();
-    if (users.some((x) => x.email === email)) return 'exists';
-    users.push({ name, email, password });
-    localStorage.setItem(this.usersKey, JSON.stringify(users));
-    return null;
-  }
+  private users = [
+    { id: 1, name: 'John Doe', email: 'john@example.com', password: 'password123' },
+    { id: 2, name: 'Jane Smith', email: 'jane@example.com', password: 'password456' }
+  ];
+  private currentUser: any = null;
 
   login(email: string, password: string): boolean {
-    const user = this.users().find((x) => x.email === email && x.password === password);
-    if (!user) return false;
-    localStorage.setItem(this.sessionKey, JSON.stringify({ name: user.name, email: user.email }));
-    return true;
+    const user = this.users.find(u => u.email === email && u.password === password);
+    if (user) {
+      this.currentUser = user;
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      return true;
+    }
+    return false;
   }
 
-  profile(): SessionUser | null {
-    const raw = localStorage.getItem(this.sessionKey);
-    return raw ? (JSON.parse(raw) as SessionUser) : null;
+  register(name: string, email: string, password: string): string {
+    if (this.users.find(u => u.email === email)) {
+      return 'exists';
+    }
+    
+    const newUser = {
+      id: this.users.length + 1,
+      name,
+      email,
+      password
+    };
+    
+    this.users.push(newUser);
+    return 'success';
   }
 
   logout(): void {
-    localStorage.removeItem(this.sessionKey);
+    this.currentUser = null;
+    localStorage.removeItem('currentUser');
+  }
+
+  getProfile(): any {
+    if (this.currentUser) {
+      return this.currentUser;
+    }
+    
+    const stored = localStorage.getItem('currentUser');
+    if (stored) {
+      this.currentUser = JSON.parse(stored);
+      return this.currentUser;
+    }
+    
+    return null;
   }
 }
