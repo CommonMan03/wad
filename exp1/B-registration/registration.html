@@ -20,7 +20,8 @@
   <script>
     document.getElementById("f").onsubmit = function (e) {
       e.preventDefault(); // keep page from reloading
-      const user = { id: Date.now(), name: name.value, email: email.value };
+      const user = { id: Date.now(), name: document.getElementById("name").value,
+email: document.getElementById("email").value };
 
       // AJAX POST demo
       const x = new XMLHttpRequest();
